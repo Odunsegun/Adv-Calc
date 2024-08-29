@@ -9,9 +9,7 @@ document.body.appendChild(calculator);
 const screen = document.createElement("input");
 screen.type = "text";
 screen.classList.add("screen");
-screen.disabled = true;
 calculator.appendChild(screen);
-
 
 
 //button container
@@ -24,8 +22,8 @@ const buttons = [
     "7", "8", "9", "/",
     "4", "5", "6", "*",
     "1", "2", "3", "-",
-    "0", ".", "**", "+",
-    "%", "C", "="
+    "0", ".", "^", "+",
+    "%", "AC", "=", "DEL"
   ];
 
 
@@ -50,7 +48,7 @@ function evaluate(num1, num2, sym1) {
         return (num1 * num2).toString();
       case "/":
         return (num1 / num2).toString();
-      case "**":
+      case "^":
         return (num1 ** num2).toString();
       case "%":
         return (num1 % num2).toString();
@@ -62,32 +60,66 @@ function evaluate(num1, num2, sym1) {
 let currentInput = "";
 let operator = null;
 let firstNumber = null;
+let logOperation = "";
 
 function ButtonClick(label) {
   if (label === "=") {
     if (firstNumber !== null && operator !== null) {
       currentInput = evaluate(firstNumber, currentInput, operator);
-      screen.value = currentInput;
+      screen.value = logOperation + label + currentInput;
+      logOperation = currentInput
       firstNumber = null;
       operator = null;
     }
-  } else if (["+", "-", "*", "/", "**", "%"].includes(label)) {
+  } else if (["+", "-", "*", "/", "^", "%"].includes(label)) {
     if (currentInput !== "") {
       firstNumber = currentInput;
       operator = label;
+      logOperation = currentInput + label;
       currentInput = "";
+      screen.value = logOperation;
     }
-  } else if (label === "C") {
+  } else if (label === "AC") {
     // Clear the calculator
     currentInput = "";
     firstNumber = null;
     operator = null;
     screen.value = "";
-  } else {
+    logOperation = "";
+  } else if (label === "DEL" ){
+    currentInput = currentInput.slice(0, -1);
+    logOperation = logOperation.slice(0, -1);
+    screen.value = logOperation;
+  }else {
     currentInput += label;
-    screen.value = currentInput;
+    logOperation += label;
+    screen.value = logOperation;
   }
 }
+
+screen.addEventListener("input", () => {
+  const touch = screen.value;
+  if(touch.length > 0){
+    lastElement = value.slice(-1);
+    if(lastElement === "="){
+      ButtonClick("=");
+    }
+    else if(["+", "-", "*", "/", "**", "%"].includes(lastElement)){
+      ButtonClick(lastElement);
+    }
+    else if(lastElement === "AC"){
+      ButtonClick("AC");
+    }
+    else if(lastElement === "DEL"){
+      ButtonClick("DEL");
+    }
+    else {
+      currentInput = value;
+      logOperation = value;
+    }
+  }
+  
+});
 
 
 
